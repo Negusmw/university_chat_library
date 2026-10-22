@@ -11,7 +11,7 @@ SECRET_KEY = '4zl)j%ew^_f70-eiugn7moayz))xa&_hsseje0b-(p)dq(1^0a'
 DEBUG = True
 
    # Force deploy - fixed ALLOWED_HOSTS
-   ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
