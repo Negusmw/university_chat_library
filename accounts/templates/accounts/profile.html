@@ -1,0 +1,69 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<title>My Profile</title>
+<style>
+body{background:#f5f7fb;font-family:sans-serif}
+.card{max-width:600px;margin:40px auto;background:white;padding:25px;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,0.1)}
+label{font-weight:bold;margin-top:15px;display:block}
+input,select,textarea{width:100%;padding:10px;margin-top:5px;border:1px solid #d7dfeb;border-radius:8px}
+button{margin-top:20px;background:#1769df;color:white;border:0;padding:12px 20px;border-radius:20px;font-weight:bold;cursor:pointer}
+.avatar-big{width:80px;height:80px;background:#e3ecff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;overflow:hidden}
+.avatar-big img{width:100%;height:100%;object-fit:cover}
+</style>
+</head>
+{% if messages %}
+  {% for message in messages %}
+    <div style="background: #d4edda; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+      {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
+<body>
+<div class="card">
+<h2>My Profile</h2>
+
+<form method="post" enctype="multipart/form-data">
+{% csrf_token %}
+
+<div class="avatar-big">
+{% if profile.avatar %}
+<img src="{{ profile.avatar.url }}">
+{% else %}👤{% endif %}
+</div>
+
+<label>Change Photo</label>
+<input type="file" name="avatar" accept="image/*">
+
+<label>Full Name</label>
+<input type="text" name="full_name" value="{{ profile.full_name }}">
+
+<label>Student ID</label>
+<input type="text" name="student_id" value="{{ profile.student_id }}">
+
+<label>Course</label>
+<input type="text" name="course" placeholder="e.g. BSc Computer Science" value="{{ profile.course }}">
+
+<label>Year</label>
+<select name="year_of_study">
+<option value="">Select Year</option>
+<option value="1" {% if profile.year_of_study == '1' %}selected{% endif %}>Year 1</option>
+<option value="2" {% if profile.year_of_study == '2' %}selected{% endif %}>Year 2</option>
+<option value="3" {% if profile.year_of_study == '3' %}selected{% endif %}>Year 3</option>
+<option value="4" {% if profile.year_of_study == '4' %}selected{% endif %}>Year 4</option>
+</select>
+
+<label>Bio</label>
+<textarea name="bio" rows="3">{{ profile.bio }}</textarea>
+
+<label>Email</label>
+<input type="email" name="email" value="{{ request.user.email }}">
+
+<button type="submit">Save Changes</button>
+</form>
+
+<p style="margin-top:15px"><a href="/accounts/dashboard/">← Back to Dashboard</a></p>
+</div>
+</body>
+</html>

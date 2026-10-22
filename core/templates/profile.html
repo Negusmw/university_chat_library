@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>My Profile - University Chat</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+body{background:#f1f5f9;display:flex;min-height:100vh}
+.sidebar{width:260px;background:#f8f7f0;padding:20px;border-right:1px solid #e2e8f0;position:sticky;top:0;height:100vh}
+.logo{background:#0f172a;color:white;padding:14px 16px;border-radius:14px;font-weight:800;font-size:13px;margin-bottom:16px}
+.logo small{color:#fbbf24;display:block;font-size:10px;font-weight:400;margin-top:4px}
+.menu a{display:flex;gap:10px;padding:12px 14px;border-radius:12px;text-decoration:none;color:#334155;font-size:14px;margin-bottom:6px;transition:0.2s}
+.menu a.active,.menu a:hover{background:#0f172a;color:white;box-shadow:0 8px 20px rgba(15,23,42,0.25)}
+.main{flex:1}
+.topbar{background:#0f172a;color:white;padding:16px 28px;display:flex;justify-content:space-between;align-items:center}
+.topbar a{background:#f59e0b;color:#0f172a;padding:8px 16px;border-radius:10px;text-decoration:none;font-weight:700;font-size:13px}
+.content{padding:28px}
+.profile-card{background:linear-gradient(135deg,#ffffff 0%,#f8fafc 100%);border-radius:24px;padding:32px;box-shadow:0 20px 50px rgba(0,0,0,0.08);max-width:700px;margin:0 auto;border:1px solid #e2e8f0}
+.avatar{width:100px;height:100px;background:linear-gradient(135deg,#0f172a,#1e4a8a);border-radius:30px;display:flex;align-items:center;justify-content:center;font-size:48px;color:white;box-shadow:0 12px 30px rgba(15,23,42,0.3);margin:0 auto 20px}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px}
+.info-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:16px;}
+.info-box label{font-size:11px;color:#64748b;text-transform:uppercase;font-weight:700;letter-spacing:0.5px}
+.info-box p{font-size:15px;color:#0f172a;font-weight:600;margin-top:6px;word-break:break-all;}
+.badge{display:inline-block;background:#fef3c7;color:#b45309;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700;margin-top:12px}
+.actions{margin-top:24px;display:flex;gap:12px}
+.btn{padding:12px 20px;border-radius:12px;text-decoration:none;font-weight:700;font-size:14px;}
+.btn-primary{background:#0f172a;color:white;}
+.btn-secondary{background:white;color:#0f172a;border:1px solid #e2e8f0}
+input{width:100%;padding:12px;border-radius:10px;border:1px solid #e2e8f0;margin-top:10px;}
+</style>
+</head>
+<body>
+<div class="sidebar">
+<div class="logo">UNIVERSITY CHAT & LIBRARY <small>Powered by Negus Mw Official</small></div>
+<div class="menu">
+<a href="/accounts/dashboard/">🏠 Dashboard</a>
+<a href="/library/">📚 Digital Library</a>
+<a href="/chat/">💬 Student Chat</a>
+<a href="/community/">🎓 Join the Community</a>
+<a class="active" href="/profile/">👤 My Profile</a>
+<a href="/">🌐 Home</a>
+</div>
+</div>
+
+<div class="main">
+<div class="topbar"><b>MY PROFILE</b><a href="/accounts/logout/">Logout</a></div>
+<div class="content">
+<div class="profile-card">
+<div class="avatar">👤</div>
+
+<!-- DISPLAY NAME: username (Student ID) attached -->
+<h2 style="text-align:center;color:#0f172a">{{ full_display }}</h2>
+<p style="text-align:center;color:#64748b;font-size:13px;margin-top:4px">Student Member • Joined {{ user.date_joined|date:"M Y" }}</p>
+<center><span class="badge">✨ Active Learner</span></center>
+
+{% if not student_id or student_id == "NOT SET" %}
+<div style="background:#fef3c7;padding:16px;border-radius:14px;margin-top:20px;">
+<p style="font-size:13px;font-weight:700;">Complete Your Profile</p>
+<form method="post" style="margin-top:10px;">
+{% csrf_token %}
+<input type="text" name="student_id" placeholder="Enter your Student ID" required>
+<button class="btn btn-primary" style="width:100%;margin-top:10px;border:none;cursor:pointer;">Save My Student ID</button>
+</form>
+</div>
+{% endif %}
+
+<div class="info-grid">
+<div class="info-box"><label>Display Name</label><p>{{ full_display }}</p></div>
+<div class="info-box"><label>Student ID</label><p>{{ student_id|default:"Not set" }}</p></div>
+<div class="info-box"><label>Username</label><p>{{ username }}</p></div>
+<div class="info-box"><label>Gmail</label><p>{{ gmail|default:user.email }}</p></div>
+</div>
+
+<div class="actions">
+<a href="/accounts/dashboard/" class="btn btn-primary">← Back to Dashboard</a>
+<a href="/accounts/logout/" class="btn btn-secondary">Logout</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

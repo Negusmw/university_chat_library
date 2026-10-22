@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html><head><style>
+body{margin:0;font-family:sans-serif;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;padding:20px;}
+.card{background:white;border-radius:24px;padding:30px;max-width:600px;margin:40px auto;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.btn{display:inline-block;background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:12px 20px;border-radius:12px;text-decoration:none;font-weight:700;margin:5px;}
+.btn-green{background:linear-gradient(135deg,#11998e,#38ef7d);}
+.badge{background:#e0e7ff;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:800;}
+</style></head><body>
+<div class="card">
+<span class="badge">{{ group.course|upper }}</span>
+<h1>{{ group.name }}</h1>
+<p>{{ group.description }}</p>
+<p>👥 {{ members|length }} members</p>
+<p>{% for m in members %}{{ m.username }} {% endfor %}</p>
+{% if user in members %}
+  <p style="color:green;font-weight:800;">✅ You are a member!</p>
+  <a href="{% url 'group_chat' group.id %}" class="btn btn-green" style="background:linear-gradient(135deg,#11998e,#38ef7d);">💬 Enter Group Chat</a>
+  <a href="{% url 'leave_group' group.id %}" class="btn" style="background:#ff4757;">Leave Group</a>
+{% else %}
+  <a href="{% url 'join_group' group.id %}" class="btn btn-green" style="background:linear-gradient(135deg,#11998e,#38ef7d);">✨ Join Group</a>
+{% endif %}
+<a href="{% url 'community' %}" class="btn">Back</a>
+</div></body></html>

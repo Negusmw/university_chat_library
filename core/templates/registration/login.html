@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head><title>Login - University Chat</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI'}
+body{min-height:100vh;background:radial-gradient(1200px 600px at 50% -10%,#1e3a8a,#0b1220);display:flex;align-items:center;justify-content:center;padding:20px}
+.card{background:white;border-radius:24px;padding:36px;max-width:400px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,0.5);transform:perspective(1000px) rotateX(4deg)}
+h2{text-align:center;color:#0f172a;font-weight:800}
+p.sub{text-align:center;color:#64748b;font-size:13px;margin:8px 0 24px}
+input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid #e2e8f0;background:#f8fafc;margin-bottom:14px;outline:none}
+input:focus{border-color:#2f66f0;box-shadow:0 0 0 3px rgba(47,102,240,0.1)}
+.btn{width:100%;padding:12px;background:#0f2a52;color:white;border:none;border-radius:12px;font-weight:700;cursor:pointer;box-shadow:0 6px 0 #0a1c38;margin-top:6px}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 #0a1c38}
+a.link{display:block;text-align:center;margin-top:16px;color:#2f66f0;text-decoration:none;font-size:13px;font-weight:600}
+</style>
+</head>
+<body>
+<div class="card">
+<h2>🔐 Welcome Back</h2>
+<p class="sub">Login to University Chat & Library</p>
+<form method="post">
+{% csrf_token %}
+<input type="text" name="username" placeholder="Username" required>
+<input type="password" name="password" placeholder="Password" required>
+<button class="btn" type="submit">Login to Your Account</button>
+</form>
+<a class="link" href="/accounts/register/">Don't have account? Create New - Free</a>
+<a class="link" href="/" style="color:#64748b">← Back to Home</a>
+</div>
+</body>
+</html>

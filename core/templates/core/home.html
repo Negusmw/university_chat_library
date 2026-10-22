@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>University Chat & Library</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',system-ui}
+body{min-height:100vh;background:#0b1220;color:white;overflow-x:hidden}
+.navbar{position:fixed;top:0;width:100%;padding:16px 40px;display:flex;justify-content:space-between;align-items:center;background:rgba(11,18,32,0.85);backdrop-filter:blur(12px);z-index:100;border-bottom:1px solid rgba(255,255,255,0.08)}
+.logo{color:#f59e0b;font-weight:800;letter-spacing:1px}
+.navlinks a{color:#cbd5e1;text-decoration:none;margin-left:24px;font-size:14px;font-weight:500}
+.navlinks a:hover{color:white}
+.hero{padding:140px 40px 80px;text-align:center;position:relative;background:radial-gradient(1200px 600px at 50% -10%,#1e3a8a 0%,#0f172a 40%,#0b1220 100%);overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=2000&q=80') center/cover;opacity:0.12;mix-blend-mode:overlay}
+.hero h1{font-size:42px;font-weight:800;position:relative;z-index:2;text-shadow:0 4px 20px rgba(0,0,0,0.5)}
+.hero p{max-width:700px;margin:18px auto 0;color:#cbd5e1;line-height:1.6;position:relative;z-index:2}
+.btns{margin-top:28px;display:flex;gap:14px;justify-content:center;position:relative;z-index:2}
+.btn-3d{padding:12px 24px;border-radius:10px;border:none;font-weight:700;cursor:pointer;box-shadow:0 8px 0 #b45309,0 12px 24px rgba(0,0,0,0.4);transform:translateY(0);transition:0.15s}
+.btn-3d:active{transform:translateY(6px);box-shadow:0 2px 0 #b45309,0 4px 12px rgba(0,0,0,0.4)}
+.btn-yellow{background:linear-gradient(180deg,#fbbf24,#f59e0b);color:#0b1220}
+.btn-outline{background:rgba(255,255,255,0.08);color:white;border:1px solid rgba(255,255,255,0.2);box-shadow:0 8px 0 rgba(0,0,0,0.4),0 12px 24px rgba(0,0,0,0.3)}
+
+.section{background:#f8fafc;color:#0f172a;padding:60px 40px}
+.section h2{text-align:center;font-size:28px;font-weight:800}
+.section .sub{text-align:center;color:#64748b;margin-top:8px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:1100px;margin:40px auto 0}
+.card-3d{background:white;border-radius:20px;padding:26px;box-shadow:0 20px 40px rgba(0,0,0,0.08),0 1px 0 rgba(255,255,255,1) inset,0 -1px 0 rgba(0,0,0,0.05) inset;transform:perspective(1000px) rotateX(2deg) rotateY(-2deg);transition:0.3s;border:1px solid #e2e8f0;position:relative}
+.card-3d:hover{transform:perspective(1000px) rotateX(0) rotateY(0) translateY(-8px);box-shadow:0 30px 60px rgba(0,0,0,0.12)}
+.card-3d h3{font-size:16px;margin-bottom:8px}
+.card-3d p{font-size:13px;color:#64748b;line-height:1.6}
+
+.login-gate{position:fixed;inset:0;background:rgba(11,18,32,0.88);backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px}
+.gate-box{background:white;color:#0f172a;border-radius:24px;padding:32px;max-width:420px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.2) inset;transform:perspective(1000px) rotateX(5deg);text-align:center}
+.gate-box h2{font-size:22px}
+.gate-box p{color:#64748b;font-size:13px;margin:10px 0 22px;line-height:1.5}
+.gate-actions{display:grid;gap:12px}
+.gate-actions a{padding:12px;border-radius:12px;text-decoration:none;font-weight:700;text-align:center;box-shadow:0 6px 0 rgba(0,0,0,0.1)}
+.a-primary{background:#0f2a52;color:white;box-shadow:0 6px 0 #0a1c38 !important}
+.a-secondary{background:#f1f5f9;color:#0f172a}
+
+@media(max-width:900px){.cards{grid-template-columns:1fr}.hero h1{font-size:28px}.navbar{padding:12px 20px}}
+</style>
+</head>
+<body>
+<div class="navbar">
+<div class="logo">UNIVERSITY CHAT & LIBRARY</div>
+<div class="navlinks">
+<a href="/">Home</a><a href="/dashboard/">Dashboard</a><a href="/library/">Library</a><a href="/chat/">Chat</a><a href="/community/">Community</a>
+{% if user.is_authenticated %}<a style="color:#fbbf24">Hi, {{ user.username }} 👋</a><a href="/accounts/logout/">Logout</a>{% endif %}
+</div>
+</div>
+
+<div class="hero">
+<h1>Welcome to Your University Community</h1>
+<p>Learn together, share knowledge, access study resources, and connect with fellow students in one place. Your academic journey starts here.</p>
+<div class="btns">
+{% if user.is_authenticated %}
+<a href="/library/"><button class="btn-3d btn-yellow">Explore Library</button></a>
+<a href="/chat/"><button class="btn-3d btn-yellow">Join Student Chat</button></a>
+{% else %}
+<a href="/accounts/login/"><button class="btn-3d btn-yellow">Login to Continue</button></a>
+<a href="/accounts/register/"><button class="btn-3d btn-outline">Create Account</button></a>
+{% endif %}
+</div>
+</div>
+
+<div class="section">
+<h2>Everything You Need to Learn</h2>
+<p class="sub">A digital space designed to support your university life.</p>
+<div class="cards">
+<div class="card-3d"><h3>📚 Digital Library</h3><p>Find learning materials, study notes, past papers, and upload your own resources for others.</p></div>
+<div class="card-3d"><h3>💬 Student Chat</h3><p>Connect with fellow students and share ideas with text, photos, videos, and voice notes - 3D bubbles!</p></div>
+<div class="card-3d"><h3>🎓 Student Dashboard</h3><p>Access your student area and keep track of your academic community and groups.</p></div>
+</div>
+</div>
+
+{% if not user.is_authenticated %}
+<div class="login-gate">
+<div class="gate-box">
+<h2>🔒 Please Login</h2>
+<p>You need to login or create an account to access University Chat & Library. Join 200+ students already learning together!</p>
+<div class="gate-actions">
+<a class="a-primary" href="/accounts/login/">Login to Your Account</a>
+<a class="a-secondary" href="/accounts/register/">Create New Account - Free</a>
+</div>
+<p style="font-size:11px;margin-top:16px;color:#94a3b8">Secure • University Email • 3D Modern Platform</p>
+</div>
+</div>
+{% endif %}
+
+</body>
+</html>

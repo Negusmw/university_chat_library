@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ group.name }} - Chat</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family: 'Segoe UI', sans-serif;}
+body{background:#0f0f1a;display:flex;flex-direction:column;height:100vh;}
+.top-bar{background:linear-gradient(135deg,#667eea,#764ba2);padding:14px 20px;display:flex;justify-content:space-between;align-items:center;color:white;box-shadow:0 4px 20px rgba(0,0,0,0.4);}
+.top-bar a{color:white;text-decoration:none;font-weight:600;}
+.main{display:flex;flex:1;overflow:hidden;}
+.chat-area{flex:1;display:flex;flex-direction:column;background:linear-gradient(180deg,#1a1a2e 0%,#16213e 100%);position:relative;}
+.chat-header{padding:16px 20px;background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,0.1);display:flex;justify-content:space-between;align-items:center;color:white;}
+.chat-header h3{font-size:18px;}
+.badge{background:rgba(102,126,234,0.3);padding:4px 12px;border-radius:20px;font-size:12px;border:1px solid rgba(102,126,234,0.5);}
+.messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px;}
+.msg{max-width:70%;padding:12px 16px;border-radius:18px;position:relative;animation:pop 0.3s ease;word-wrap:break-word;}
+@keyframes pop{0%{transform:scale(0.8) translateY(10px);opacity:0}100%{transform:scale(1) translateY(0);opacity:1}}
+.msg-own{align-self:flex-end;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border-bottom-right-radius:4px;box-shadow:0 4px 15px rgba(102,126,234,0.4);}
+.msg-other{align-self:flex-start;background:rgba(255,255,255,0.95);color:#1a1a2e;border-bottom-left-radius:4px;box-shadow:0 4px 15px rgba(0,0,0,0.2);}
+.msg-info{font-size:11px;opacity:0.7;margin-top:6px;display:flex;gap:6px;}
+.msg img{max-width:250px;border-radius:12px;margin-top:8px;display:block;}
+.msg .file-link{display:inline-flex;align-items:center;gap:6px;background:rgba(0,0,0,0.15);padding:8px 12px;border-radius:10px;margin-top:8px;text-decoration:none;color:inherit;font-size:13px;}
+.input-area{padding:16px;background:rgba(0,0,0,0.3);backdrop-filter:blur(10px);display:flex;gap:10px;align-items:center;border-top:1px solid rgba(255,255,255,0.1);}
+.input-area form{display:flex;flex:1;gap:10px;align-items:center;}
+.input-area input[type="text"]{flex:1;padding:14px 18px;border-radius:25px;border:none;background:rgba(255,255,255,0.9);outline:none;font-size:14px;}
+.icon-btn{background:rgba(255,255,255,0.1);border:none;width:42px;height:42px;border-radius:50%;cursor:pointer;font-size:18px;color:white;transition:0.2s;}
+.icon-btn:hover{background:rgba(102,126,234,0.5);}
+.send-btn{background:linear-gradient(135deg,#667eea,#764ba2);border:none;padding:12px 22px;border-radius:25px;color:white;font-weight:600;cursor:pointer;box-shadow:0 4px 15px rgba(102,126,234,0.4);transition:0.2s;}
+.send-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(102,126,234,0.6);}
+
+/* Members sidebar - DISCORD STYLE */
+.sidebar{width:260px;background:#15151f;border-left:1px solid rgba(255,255,255,0.08);padding:16px;overflow-y:auto;color:white;}
+.sidebar h4{font-size:12px;letter-spacing:1px;opacity:0.5;margin-bottom:12px;text-transform:uppercase;}
+.member{display:flex;align-items:center;gap:10px;padding:8px;border-radius:10px;transition:0.2s;}
+.member:hover{background:rgba(255,255,255,0.06);}
+.avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;}
+.online{width:10px;height:10px;background:#23d160;border-radius:50%;border:2px solid #15151f;margin-left:-12px;margin-top:20px;}
+
+@media(max-width:768px){.sidebar{display:none;}}
+</style>
+</head>
+<body>
+<div class="top-bar">
+  <a href="/community/">← UNIMA Communities</a>
+  <span>⚡ {{ group.name }}</span>
+</div>
+
+<div class="main">
+  <div class="chat-area">
+    <div class="chat-header">
+      <div>
+        <h3>{{ group.name }}</h3>
+        <small style="opacity:0.6">{{ group.course }}</small>
+      </div>
+      <span class="badge">{{ members|length }} members</span>
+    </div>
+
+    <div class="messages" id="messagesBox">
+      {% for m in chat_messages %}
+        <div class="msg {% if m.sender == request.user %}msg-own{% else %}msg-other{% endif %}">
+          {% if m.sender != request.user %}
+            <div style="font-size:12px;font-weight:700;margin-bottom:4px;color:#667eea">{{ m.sender.username }}</div>
+          {% endif %}
+
+          {% if m.content %}<div>{{ m.content }}</div>{% endif %}
+
+          {% if m.image %}
+            <img src="{{ m.image.url }}" alt="image" onclick="window.open(this.src)">
+          {% endif %}
+
+          {% if m.file %}
+            <a class="file-link" href="{{ m.file.url }}" download>📎 {{ m.file.name|slice:"11:" }} - Download</a>
+          {% endif %}
+
+          <div class="msg-info">
+            <span>{% if m.sender == request.user %}You{% else %}{{ m.sender.username }}{% endif %}</span>
+            <span>• {{ m.created_at|date:"H:i" }}</span>
+          </div>
+        </div>
+      {% empty %}
+        <div style="text-align:center;color:rgba(255,255,255,0.4);margin-top:40px;">
+          <div style="font-size:50px">💬</div>
+          <p>No messages yet. Start the conversation!</p>
+          <p style="font-size:12px;margin-top:6px">Share notes, past papers, assignments...</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="input-area">
+      <form method="POST" enctype="multipart/form-data" id="chatForm">
+        {% csrf_token %}
+        <input type="file" id="imageInput" name="image" accept="image/*" style="display:none" onchange="document.getElementById('chatForm').submit()">
+        <input type="file" id="fileInput" name="file" style="display:none" onchange="document.getElementById('chatForm').submit()">
+
+        <button type="button" class="icon-btn" onclick="document.getElementById('imageInput').click()" title="Send Image">🖼️</button>
+        <button type="button" class="icon-btn" onclick="document.getElementById('fileInput').click()" title="Send File">📎</button>
+
+        <input type="text" name="content" placeholder="Type message in {{ group.name }}..." autocomplete="off" id="msgInput">
+        <button type="submit" class="send-btn">Send 🚀</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <h4>Members — {{ members|length }}</h4>
+    {% for member in members %}
+    <div class="member">
+      <div class="avatar">{{ member.username|slice:":1"|upper }}</div>
+      <div class="online"></div>
+      <div>
+        <div style="font-size:14px;font-weight:600">{{ member.username }}</div>
+        <div style="font-size:11px;opacity:0.5">{% if member == request.user %}You • Online{% else %}Online{% endif %}</div>
+      </div>
+    </div>
+    {% empty %}
+    <p style="opacity:0.4;font-size:13px">No members</p>
+    {% endfor %}
+
+    <div style="margin-top:20px;padding:12px;background:rgba(102,126,234,0.15);border-radius:12px;border:1px solid rgba(102,126,234,0.3)">
+      <div style="font-size:12px;font-weight:600">💡 Study Group Tip</div>
+      <div style="font-size:11px;opacity:0.7;margin-top:4px">Share notes as files, images of whiteboards!</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const box = document.getElementById('messagesBox');
+const msgInput = document.getElementById('msgInput');
+const chatForm = document.getElementById('chatForm');
+const groupId = {{ group.id }};
+let lastMessageId = {{ chat_messages.last.id|default:0 }};
+
+function scrollBottom(){ box.scrollTop = box.scrollHeight; }
+scrollBottom();
+msgInput.focus();
+
+function renderMessage(m){
+  const isMe = m.is_me;
+  let html = `<div class="msg ${isMe ? 'msg-own' : 'msg-other'}">`;
+  if(!isMe){ html += `<div style="font-size:12px;font-weight:700;margin-bottom:4px;color:#667eea">${m.sender}</div>`; }
+  if(m.content){ html += `<div>${m.content}</div>`; }
+  if(m.image_url){ html += `<img src="${m.image_url}" onclick="window.open(this.src)">`; }
+  if(m.file_url){ html += `<a class="file-link" href="${m.file_url}" download>📎 ${m.file_name} - Download</a>`; }
+  html += `<div class="msg-info"><span>${isMe ? 'You' : m.sender}</span><span>• ${m.time}</span></div></div>`;
+  return html;
+}
+
+// SEND WITHOUT RELOAD
+chatForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const formData = new FormData(chatForm);
+  if(!formData.get('content') && !formData.get('image').name && !formData.get('file').name) return;
+
+  const response = await fetch(window.location.href, {
+    method: 'POST',
+    body: formData,
+    headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+  });
+
+  if(response.ok){
+    msgInput.value = '';
+    document.getElementById('imageInput').value = '';
+    document.getElementById('fileInput').value = '';
+    fetchMessages(); // immediate refresh
+  }
+});
+
+// FETCH NEW MESSAGES EVERY 2 SECONDS - REAL TIME!
+async function fetchMessages(){
+  try {
+    const res = await fetch(`/community/${groupId}/messages/json/`);
+    const data = await res.json();
+    const messages = data.messages;
+
+    // Only re-render if new messages
+    if(messages.length > 0 && messages[messages.length-1].id !== lastMessageId){
+      box.innerHTML = '';
+      messages.forEach(m => { box.innerHTML += renderMessage(m); });
+      lastMessageId = messages[messages.length-1].id;
+      scrollBottom();
+    }
+  } catch(err){ console.log(err); }
+}
+
+// Poll every 2 seconds
+setInterval(fetchMessages, 2000);
+</script>
+</body>
+</html>

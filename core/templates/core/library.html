@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Library | UNIVERSITY CHAT & LIBRARY</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, sans-serif; background: #f2f5fb; color: #183153; }
+        header { background: #102b50; color: white; padding: 25px; }
+        header h1 { margin: 0; font-size: 24px; }
+        header p { color: #e7b94f; margin-bottom: 0; }
+        .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
+        .welcome { background: linear-gradient(120deg, #102b50, #205b91); color: white; padding: 30px; border-radius: 16px; margin-bottom: 25px; }
+        .welcome h2 { margin-top: 0; }
+
+        /* NEW FILTER */
+        .filter-bar {
+            background: white;
+            padding: 18px;
+            border-radius: 14px;
+            box-shadow: 0 5px 18px #dfe6f0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 15px 0 25px;
+            align-items: center;
+        }
+        .filter-bar select, .filter-bar input {
+            padding: 11px 12px;
+            border: 1px solid #d4deec;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #f8faff;
+        }
+        .filter-bar button {
+            background: #102b50;
+            color: white;
+            padding: 11px 16px;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .filter-bar .clear {
+            background: #e7b94f;
+            color: #102b50;
+            padding: 11px 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .count-badge {
+            background: #102b50;
+            color: #e7b94f;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: auto;
+        }
+
+        .resource-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top: 25px; }
+        .resource-card { background: #ffffff; border: 1px solid #e6eaf0; border-top: 4px solid #d4a72c; border-radius: 14px; padding: 24px; box-shadow: 0 5px 18px rgba(16, 42, 85, 0.08); transition: transform 0.2s, box-shadow 0.2s; }
+        .resource-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(16, 42, 85, 0.14); }
+        .resource-icon { font-size: 38px; margin-bottom: 12px; }
+        .resource-subject { display: inline-block; background: #edf3ff; color: #173b72; padding: 6px 11px; border-radius: 20px; font-size: 11px; font-weight: bold; margin: 2px; }
+        .resource-subject.year { background: #fff4d6; color: #8a6a10; }
+        .resource-subject.code { background: #e6f4ea; color: #1a5c2e; }
+        .resource-card h3 { color: #173b72; margin: 15px 0 10px; }
+        .resource-card p { color: #64748b; line-height: 1.6; }
+        .download-btn { display: inline-block; background: #173b72; color: #ffffff; text-decoration: none; padding: 11px 16px; border-radius: 8px; font-weight: bold; margin-top: 12px; }
+        .download-btn:hover { background: #d4a72c; color: #102a55; }
+        .back { display: inline-block; margin: 25px 0; color: #205b91; }
+        footer { text-align: center; padding: 25px; color: #718096; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>📚 UNIVERSITY CHAT & LIBRARY</h1>
+        <p>Digital Library · Negus Mw Official</p>
+    </header>
+
+    <main class="container">
+        <section class="welcome">
+            <h2>Your Digital Library 🎓</h2>
+            <p>Discover learning materials and build your knowledge, one page at a time. Filter by ALL UNIMA Programs.</p>
+        </section>
+
+        <h2>Explore Study Resources</h2>
+
+        <!-- UNIMA FILTER BAR -->
+        <form method="GET" class="filter-bar">
+            <select name="program">
+                <option value="">📚 All Programs</option>
+                {% for code, name in program_choices %}
+                <option value="{{ code }}" {% if request.GET.program == code %}selected{% endif %}>{{ name }}</option>
+                {% endfor %}
+            </select>
+
+            <select name="year">
+                <option value="">📅 Year</option>
+                <option value="1" {% if request.GET.year == "1" %}selected{% endif %}>1st Year</option>
+                <option value="2" {% if request.GET.year == "2" %}selected{% endif %}>2nd Year</option>
+                <option value="3" {% if request.GET.year == "3" %}selected{% endif %}>3rd Year</option>
+                <option value="4" {% if request.GET.year == "4" %}selected{% endif %}>4th Year</option>
+            </select>
+
+            <input type="text" name="course" value="{{ request.GET.course }}" placeholder="Course: PHI101, LAN113...">
+            <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Search title..." style="flex:1; min-width:160px;">
+
+            <button type="submit">Filter 🔍</button>
+            <a class="clear" href="{% url 'library' %}">Clear</a>
+
+            <span class="count-badge">{{ resources|length }} found</span>
+        </form>
+
+        <div class="resource-grid" id="resourceGrid">
+            {% for resource in resources %}
+            <div class="resource-card">
+                <div class="resource-icon">📘</div>
+
+                <span class="resource-subject">{{ resource.get_program_display }}</span>
+                <span class="resource-subject code">{{ resource.course_code }}</span>
+                <span class="resource-subject year">Year {{ resource.year }}</span>
+
+                <h3>{{ resource.title }}</h3>
+                <p>{{ resource.description|default:"Study material available for students." }}</p>
+
+                <a class="download-btn" href="{{ resource.file.url }}" download>⬇ Download PDF</a>
+            </div>
+            {% empty %}
+            <div class="resource-card">
+                <div class="resource-icon">📚</div>
+                <h3>No materials found</h3>
+                <p>Try changing filter: All Programs + Clear. Or add new books in admin with correct program code.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <a class="back" href="/accounts/dashboard/">← Back to Student Dashboard</a>
+    </main>
+
+    <footer>© UNIVERSITY CHAT & LIBRARY · Negus Mw Official</footer>
+</body>
+</html>

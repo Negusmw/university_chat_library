@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Login</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #071a3d, #124b85);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            width: 100%;
+            max-width: 420px;
+            padding: 35px;
+            border-radius: 16px;
+            box-shadow: 0 15px 45px rgba(0,0,0,.2);
+        }
+
+        .brand {
+            text-align: center;
+            color: #b38620;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        h1 {
+            text-align: center;
+            color: #071a3d;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #667085;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin: 16px 0 7px;
+            font-weight: bold;
+            color: #172554;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccd4e0;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 24px;
+            padding: 14px;
+            background: #f5c451;
+            color: #071a3d;
+            border: none;
+            border-radius: 7px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .error {
+            background: #fff0f0;
+            color: #b42318;
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        .bottom {
+            text-align: center;
+            margin-top: 20px;
+            color: #667085;
+        }
+
+        a {
+            color: #124b85;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="card">
+        <p class="brand">UNIVERSITY CHAT &amp; LIBRARY</p>
+        <h1>Welcome Back!</h1>
+        <p class="subtitle">Log in to your student account.</p>
+
+        {% if form.errors %}
+            <p class="error">
+                Your username or password is incorrect.
+                Please try again.
+            </p>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            {{ form.website }} <!-- Honeypot - leave empty -->
+ {{ form.timestamp }}
+
+ <label>UNIMA Student ID</label>
+ {{ form.student_id }}
+
+ <label>Password</label>
+ {{ form.password }}
+
+ <button type="submit">Login as UNIMA Student</button>
+</form>
+
+<style>
+ /* Hide honeypot from humans */
+ input[name="website"] { display: none !important; }
+</style>
+
+            <label for="id_username">Username</label>
+            <input
+                id="id_username"
+                type="text"
+                name="username"
+                autocomplete="username"
+                required
+            >
+
+            <label for="id_password">Password</label>
+            <input
+                id="id_password"
+                type="password"
+                name="password"
+                autocomplete="current-password"
+                required
+            >
+
+            <button type="submit">Log In</button>
+        </form>
+
+        <p class="bottom">
+            Don't have an account?
+            <a href="/accounts/register/">Register here</a>
+        </p>
+    </main>
+</body>
+</html>

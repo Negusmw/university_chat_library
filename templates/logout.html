@@ -1,0 +1,13 @@
+<!DOCTYPE html><html><head><title>Logged Out</title><link rel="manifest" href="/static/manifest.json">
+<meta name="theme-color" content="#0f172a">
+<link rel="icon" href="/static/icon-192.png"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}body{background:linear-gradient(135deg,#0f172a,#1e3a5f);min-height:100vh;display:flex;align-items:center;justify-content:center}
+.card{background:white;border-radius:28px;padding:48px 40px;max-width:480px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,0.3);animation:float 4s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.icon{width:90px;height:90px;background:linear-gradient(135deg,#10b981,#059669);border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:42px;margin:0 auto 20px}
+.btn{padding:14px 20px;border-radius:14px;text-decoration:none;font-weight:700;display:block;margin-top:12px}
+.btn-primary{background:#0f172a;color:white}.btn-secondary{background:#f8fafc;color:#0f172a;border:1px solid #e2e8f0}
+</style></head><body><div class="card"><div class="icon">👋</div><h1>Logged Out!</h1><p style="color:#64748b;margin:12px 0">Session safely closed.</p>
+<a href="/accounts/login/" class="btn btn-primary">🔐 Login Again</a><a href="/" class="btn btn-secondary">🌐 Home</a></div><script>
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/static/sw.js')}
+</script></body></html>

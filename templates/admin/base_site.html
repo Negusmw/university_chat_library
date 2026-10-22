@@ -1,0 +1,94 @@
+{% extends "admin/base.html" %}
+{% block title %}UNIMA - SUPER 3D Admin{% endblock %}
+{% block branding %}
+<h1 id="site-name"><a href="/my-admin/" style="color:white;font-weight:900;letter-spacing:1px">🎓 UNIMA <span style="color:#fbbf24;text-shadow:0 0 10px rgba(251,191,36,0.5)">SUPER 3D</span></a></h1>
+{% endblock %}
+{% block extrastyle %}
+<style>
+#header{background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 60%,#0f172a 100%) !important;height:68px !important;box-shadow:0 15px 40px rgba(0,0,0,0.3) !important;border-bottom:2px solid rgba(251,191,36,0.2) !important}
+#container{background:radial-gradient(ellipse at top,#e2e8f0 0%,#f1f5f9 100%) !important;min-height:100vh}
+#content{padding:28px !important}
+
+/* QUICK BAR 3D */
+.quick-bar{background:linear-gradient(145deg,#ffffff,#f8fafc);border:1px solid #e2e8f0;border-radius:16px;padding:14px 18px;margin-bottom:26px;display:flex;gap:12px;box-shadow:0 10px 30px rgba(0,0,0,0.07),0 1px 0 white inset;transform:perspective(1000px) rotateX(2deg)}
+.quick-bar a{padding:10px 16px;border-radius:12px;text-decoration:none;font-weight:800;font-size:13px;transition:0.25s;box-shadow:0 4px 12px rgba(0,0,0,0.06)}
+.quick-bar a:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 10px 25px rgba(0,0,0,0.12)}
+.quick-bar a.accent{background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#0f172a}
+
+/* SUPER 3D MODULES */
+.module{
+background:linear-gradient(145deg,#ffffff 0%,#f8fafc 100%) !important;
+border-radius:20px !important;
+box-shadow:0 15px 40px rgba(0,0,0,0.08),0 0 0 1px rgba(255,255,255,0.9) inset,0 -1px 0 rgba(0,0,0,0.05) inset !important;
+border:1px solid #e2e8f0 !important;
+margin-bottom:28px !important;
+overflow:hidden !important;
+transform:perspective(1200px) rotateX(3deg) rotateY(-1deg);
+transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275) !important;
+}
+.module:hover{
+transform:perspective(1200px) rotateX(5deg) rotateY(-1deg) translateY(-8px) !important;
+box-shadow:0 25px 60px rgba(0,0,0,0.13),0 0 0 1px rgba(255,255,255,0.9) inset !important;
+}
+.module h2, .module caption{
+background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#334155 100%) !important;
+color:white !important;
+padding:16px 20px !important;
+font-size:13px !important;
+font-weight:800 !important;
+letter-spacing:1px !important;
+text-transform:uppercase !important;
+border-bottom:3px solid #f59e0b !important;
+}
+.module table{border-radius:0 0 20px 20px}
+.module tr{transition:0.2s}
+.module tr:hover{background:#fffbeb !important;transform:translateX(4px)}
+.module td, .module th{padding:14px 18px !important}
+.module td a{font-weight:700;color:#1e40af;text-decoration:none}
+.module td a:hover{color:#f59e0b}
+
+/* ICONS */
+.module caption::before{margin-right:10px;font-size:16px}
+.module table{position:relative}
+
+/* RECENT ACTIONS SUPER 3D */
+#content-related{
+background:linear-gradient(145deg,#ffffff,#f8fafc) !important;
+border-radius:20px !important;
+box-shadow:0 15px 40px rgba(0,0,0,0.08) !important;
+border:1px solid #e2e8f0 !important;
+transform:perspective(1200px) rotateX(3deg) rotateY(1deg);
+transition:0.4s !important;
+}
+#content-related:hover{transform:perspective(1200px) rotateX(5deg) rotateY(1deg) translateY(-6px) !important}
+#content-related h2{background:none !important;color:#0f172a !important;font-weight:900 !important}
+#content-related .actionlist li{padding:8px 0;border-bottom:1px dashed #e2e8f0}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+// Add icons to tables
+document.querySelectorAll('.module caption').forEach(c=>{
+  let t=c.textContent;
+  if(t.includes('AUTHENTICATION')) c.innerHTML='🔐 '+t;
+  else if(t.includes('CORE')) c.innerHTML='📦 '+t;
+});
+// Add icons to rows
+document.querySelectorAll('.module td').forEach(td=>{
+  if(td.textContent.includes('Groups')) td.innerHTML='👥 Groups';
+  if(td.textContent.includes('Users') && !td.innerHTML.includes('👤')) td.innerHTML='👤 Users';
+  if(td.textContent.includes('Chat messages')) td.innerHTML='💬 Chat messages';
+  if(td.textContent.includes('Resources')) td.innerHTML='📚 Resources';
+});
+});
+</script>
+{% endblock %}
+{% block nav-global %}
+<div class="quick-bar">
+<a class="accent" href="/my-admin/">⚙️ 3D HUB SUPER</a>
+<a href="/accounts/dashboard/">🏠 Dashboard</a>
+<a href="/library/">📚 Library</a>
+<a href="/chat/">💬 Chat</a>
+<a href="/profile/">👤 Profile</a>
+<a href="/logout/" style="margin-left:auto;color:#ef4444;background:linear-gradient(145deg,#fef2f2,#fee2e2);border:1px solid #fecaca">🚪 Logout</a>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}University Admin - 3D Modern{% endblock %}
+
+{% block extrastyle %}
+<style>
+/* 3D MODERN ADMIN OVERRIDE */
+#header{background:linear-gradient(135deg,#0f172a 0%,#1e4a8a 100%) !important; padding:18px 28px !important; box-shadow:0 10px 30px rgba(0,0,0,0.2) !important}
+#branding h1{font-weight:800 !important; letter-spacing:0.5px !important}
+#branding h1 a{color:white !important}
+#branding h1 span{color:#fbbf24 !important}
+#user-tools{font-size:13px !important}
+#user-tools a{border:1px solid rgba(255,255,255,0.2); padding:6px 12px !important; border-radius:8px; margin-left:6px}
+#user-tools a:hover{background:white !important; color:#0f172a !important}
+
+/* Make dashboard cards 3D */
+.module{background:white !important; border-radius:18px !important; box-shadow:0 15px 40px rgba(0,0,0,0.08) !important; border:1px solid #e2e8f0 !important; overflow:hidden; transform:perspective(1000px) rotateX(1deg); transition:0.3s}
+.module:hover{transform:perspective(1000px) rotateX(3deg) translateY(-4px); box-shadow:0 25px 60px rgba(0,0,0,0.12) !important}
+.module h2, .module caption{background:linear-gradient(135deg,#0f172a,#334155) !important; padding:14px 16px !important; font-weight:700 !important}
+.dashboard #content{width:100% !important; max-width:1200px; margin:0 auto}
+
+/* Custom top links bar */
+.custom-links{background:#f8fafc; border-bottom:1px solid #e2e8f0; padding:12px 28px; display:flex; gap:10px; flex-wrap:wrap}
+.custom-links a{background:white; border:1px solid #e2e8f0; padding:8px 14px; border-radius:10px; text-decoration:none; color:#0f172a; font-weight:600; font-size:13px; box-shadow:0 4px 10px rgba(0,0,0,0.04)}
+.custom-links a:hover{background:#0f172a; color:white; transform:translateY(-1px)}
+.custom-links a.admin-hub{background:#f59e0b; color:#0f172a; border-color:#f59e0b; font-weight:800}
+</style>
+{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="/my-admin/">UNIVERSITY CHAT <span>• ADMIN 3D</span></a></h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block content %}
+<div class="custom-links">
+<a class="admin-hub" href="/my-admin/">⚙️ 3D Admin Hub</a>
+<a href="/accounts/dashboard/">🏠 Student Dashboard</a>
+<a href="/profile/">👤 My Profile</a>
+<a href="/library/">📚 Library</a>
+<a href="/chat/">💬 Chat</a>
+<a href="/">🌐 Home Site</a>
+</div>
+{{ block.super }}
+{% endblock %}

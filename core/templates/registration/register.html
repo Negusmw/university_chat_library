@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head><title>Register - UNIMA</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI'}
+body{min-height:100vh;background:radial-gradient(1200px 600px at 50% -10%,#1e3a8a,#0b1220);display:flex;align-items:center;justify-content:center;padding:20px}
+.card{background:white;border-radius:24px;padding:32px;max-width:400px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,0.5);}
+h2{text-align:center;color:#0f172a;font-weight:800}
+p.sub{text-align:center;color:#64748b;font-size:13px;margin:8px 0 20px}
+input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid #e2e8f0;background:#f1f5f9;margin-bottom:12px;outline:none;display:block;}
+label{font-size:12px;font-weight:700;color:#334155;margin-bottom:4px;display:block;}
+.btn{width:100%;padding:13px;background:#f59e0b;color:#0b1220;border:none;border-radius:12px;font-weight:800;cursor:pointer;box-shadow:0 6px 0 #b45309;margin-top:10px}
+.error{color:red;font-size:11px;margin-bottom:8px;}
+</style>
+</head>
+<body>
+<div class="card">
+<h2>🎓 Create Account</h2>
+<p class="sub">Join 200+ students - Free</p>
+
+<form method="post">
+{% csrf_token %}
+
+{% if form.errors %}
+<div class="error">{{ form.errors }}</div>
+{% endif %}
+
+<label>Username</label>
+<input type="text" name="username" value="{{ form.username.value|default_if_none:'' }}" placeholder="Choose Username" required>
+
+<label>Gmail</label>
+<input type="email" name="email" value="{{ form.email.value|default_if_none:'' }}" placeholder="yourname@gmail.com" required>
+
+<label>Student ID</label>
+<input type="text" name="student_id" placeholder="Enter your Student ID" required>
+
+<label>Password</label>
+<input type="password" name="password1" placeholder="Choose Password" required>
+
+<label>Confirm Password</label>
+<input type="password" name="password2" placeholder="Confirm Password" required>
+
+<button class="btn" type="submit">Create New Account - Free</button>
+</form>
+
+<a href="/accounts/login/" style="display:block;text-align:center;margin-top:16px;color:#2f66f0;text-decoration:none;font-size:13px;font-weight:600">Already have account? Login</a>
+<a href="/" style="display:block;text-align:center;margin-top:10px;color:#64748b;text-decoration:none;font-size:13px;">← Back to Home</a>
+</div>
+</body>
+</html>

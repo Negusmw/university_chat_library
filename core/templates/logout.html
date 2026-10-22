@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Logged Out - University Chat</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+body{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f172a 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.card{background:linear-gradient(135deg,#ffffff 0%,#f8fafc 100%);border-radius:28px;padding:48px 40px;max-width:480px;width:100%;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,0.3);transform:perspective(1000px) rotateX(4deg);animation:float 4s ease-in-out infinite;border:1px solid #e2e8f0}
+@keyframes float{0%,100%{transform:perspective(1000px) rotateX(4deg) translateY(0)}50%{transform:perspective(1000px) rotateX(6deg) translateY(-10px)}}
+.icon{width:90px;height:90px;background:linear-gradient(135deg,#10b981,#059669);border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:42px;margin:0 auto 20px;box-shadow:0 12px 30px rgba(16,185,129,0.3)}
+h1{color:#0f172a;font-size:26px;margin-bottom:8px}
+p{color:#64748b;font-size:14px;margin-bottom:24px;line-height:1.6}
+.buttons{display:flex;flex-direction:column;gap:12px;margin-top:28px}
+.btn{padding:14px 20px;border-radius:14px;text-decoration:none;font-weight:700;font-size:14px;transition:0.2s;display:block}
+.btn-primary{background:#0f172a;color:white;box-shadow:0 10px 25px rgba(15,23,42,0.25)}
+.btn-secondary{background:#f8fafc;color:#0f172a;border:1px solid #e2e8f0}
+.btn:hover{transform:translateY(-2px)}
+</style>
+</head>
+<body>
+<div class="card">
+<div class="icon">👋</div>
+<h1>You've Logged Out!</h1>
+<p>Thanks for using University Chat & Library.<br>Your session has been safely closed.</p>
+<div class="buttons">
+<a href="/accounts/login/" class="btn btn-primary">🔐 Login Again</a>
+<a href="/" class="btn btn-secondary">🌐 Back to Home</a>
+</div>
+</div>
+</body>
+</html>

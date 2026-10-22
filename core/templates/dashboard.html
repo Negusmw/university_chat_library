@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Student Dashboard - University Chat</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+body{background:#f1f5f9;display:flex;min-height:100vh}
+.sidebar{width:260px;background:#f8f7f0;padding:20px;border-right:1px solid #e2e8f0;position:sticky;top:0;height:100vh}
+.logo{background:#0f172a;color:white;padding:14px 16px;border-radius:14px;font-weight:800;font-size:13px;margin-bottom:16px;line-height:1.2}
+.logo small{color:#fbbf24;display:block;font-size:10px;font-weight:400;margin-top:4px}
+.menu a{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;text-decoration:none;color:#334155;font-size:14px;font-weight:500;margin-bottom:6px;transition:0.2s}
+.menu a.active,.menu a:hover{background:#0f172a;color:white;box-shadow:0 8px 20px rgba(15,23,42,0.25);transform:translateY(-1px)}
+.main{flex:1;padding:0}
+.topbar{background:#0f172a;color:white;padding:16px 28px;display:flex;justify-content:space-between;align-items:center}
+.topbar b{font-size:18px;letter-spacing:0.5px}
+.topbar a{background:#f59e0b;color:#0f172a;padding:8px 16px;border-radius:10px;text-decoration:none;font-weight:700;font-size:13px;box-shadow:0 4px 0 #b45309}
+.content{padding:28px}
+.welcome{background:linear-gradient(135deg,#0f2a52 0%,#1e4a8a 50%,#0f4c75 100%);border-radius:20px;padding:28px 32px;color:white;box-shadow:0 20px 40px rgba(15,42,82,0.3),0 0 0 1px rgba(255,255,255,0.1) inset;transform:perspective(1000px) rotateX(2deg);position:relative;overflow:hidden}
+.welcome::after{content:'';position:absolute;top:-50%;right:-10%;width:300px;height:300px;background:radial-gradient(circle,rgba(255,255,255,0.15),transparent);border-radius:50%}
+.welcome h2{font-size:24px}
+.welcome h2 span{color:#fbbf24}
+.welcome p{margin-top:8px;opacity:0.9;font-size:14px}
+.section-title{margin:28px 0 18px;font-size:20px;font-weight:700;color:#0f172a}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.card{background:white;border-radius:18px;padding:22px;border:1px solid #e2e8f0;box-shadow:0 10px 30px rgba(0,0,0,0.06),0 1px 0 rgba(255,255,255,1) inset;transition:0.3s;transform-style:preserve-3d}
+.card:hover{transform:perspective(1000px) rotateX(4deg) rotateY(-4deg) translateY(-6px);box-shadow:0 30px 60px rgba(0,0,0,0.12)}
+.icon{width:42px;height:42px;border-radius:12px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:14px}
+.card h3{font-size:16px;color:#0f172a;margin-bottom:8px}
+.card p{font-size:13px;color:#64748b;line-height:1.5;margin-bottom:12px}
+.card a{font-size:13px;color:#2563eb;text-decoration:none;font-weight:700}
+.card a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="sidebar">
+<div class="logo">UNIVERSITY CHAT & LIBRARY <small>Powered by Negus Mw Official</small></div>
+<div class="menu">
+<a class="active" href="/accounts/dashboard/">🏠 Dashboard</a>
+<a href="/library/">📚 Digital Library</a>
+<a href="/chat/">💬 Student Chat</a>
+<a href="/community/">🎓 Join the Community</a>
+<a href="/profile/">👤 My Profile</a>
+<a href="/">🌐 Home</a>
+{% if user.is_staff %}
+<a href="/my-admin/" style="background:#f59e0b;color:#0f172a;font-weight:800;margin-top:12px">⚙️ Admin Hub</a>
+{% endif %}
+</div>
+</div>
+<div class="main">
+<div class="topbar"><b>UNIVERSITY CHAT & LIBRARY</b><a href="/accounts/logout/">Logout</a></div>
+<div class="content">
+<div class="welcome">
+<h2>Welcome back, <span>{{ user.username }}! 👋</span></h2>
+<p>Your learning journey continues here. Explore resources, connect with students, and grow together.</p>
+</div>
+<div class="section-title">Your Learning Space</div>
+<div class="grid">
+<div class="card"><div class="icon">📚</div><h3>Digital Library</h3><p>Explore books, academic notes, and study resources.</p><a href="/library/">Explore Library →</a></div>
+<div class="card"><div class="icon">💬</div><h3>Student Chat</h3><p>Connect with fellow students and discuss your studies.</p><a href="/chat/">Enter Student Chat →</a></div>
+<div class="card"><div class="icon">👤</div><h3>My Profile</h3><p>View and update your personal information.</p><a href="/profile/">View Profile →</a></div>
+<div class="card"><div class="icon">🎓</div><h3>Study Community</h3><p>Join study groups and community discussions.</p><a href="/community/">Join Community →</a></div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
