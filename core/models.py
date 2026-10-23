@@ -72,21 +72,22 @@ class Resource(models.Model):
     def __str__(self):
         return f"{self.title} - {self.program}"
 
-def create_profile_for_new_user(sender, instance, created, **kwargs):
-    if created:
-        try:
-            StudentProfile.objects.get_or_create(user=instance)
-        except Exception:
-            pass
+class StudentProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    student_id = models.CharField(max_length=30, unique=True, blank=True, null=True, default=None)
+    gmail = models.EmailField(blank=True)
 
     def __str__(self):
        return f"{self.user.username} - {self.student_id or 'No ID'}"
 
-# SAFE SIGNAL - never crashes
+# SAFE SIGNAL - never crashes during migrate / createsuperuser
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 @receiver(post_save, sender=User)
 def create_profile_for_new_user(sender, instance, created, **kwargs):
     if created:
-        StudentProfile.objects.get_or_create(user=instance)
+        try:
+            StudentProfile.objects.get_or_create(user=instance)
+        except Exception:
+            pass
