@@ -70,12 +70,14 @@
         <h1>Create Account</h1>
         <p class="subtitle">Join your university community.</p>
 
-        {% if messages %}
-            {% for message in messages %}
-                <p class="message">{{ message }}</p>
-            {% endfor %}
-        {% endif %}
-
+       {% if error_msg %}
+        <p class="message" style="background:#ffe0e0; padding:10px; border-radius:5px;">{{ error_msg }}</p>
+           {% endif %}
+       {% if messages %}
+      {% for message in messages %}
+        <p class="message">{{ message }}</p>
+           {% endfor %}
+           {% endif %}
         <form method="post">
             {% csrf_token %}
 
