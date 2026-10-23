@@ -1,4 +1,3 @@
 {
-  "builds": [{"src": "config/wsgi.py", "use": "@vercel/python"}],
-  "routes": [{"src": "/(.*)", "dest": "config/wsgi.py"}]
+  "buildCommand": "pip install -r requirements.txt && python manage.py migrate --noinput && python manage.py collectstatic --noinput"
 }
