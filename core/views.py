@@ -62,11 +62,9 @@ def chat(request):
         uploaded_file = request.FILES.get("file")
 
         if uploaded_file:
-            # FIX: use real extension check
             name = uploaded_file.name.lower()
             _, ext = os.path.splitext(name)
             if ext in ['.mp3', '.m4a', '.wav', '.ogg', '.webm'] and message_type != 'video':
-                # webm can be voice OR video - if from mic it's voice
                 if 'voice' in name or message_type == 'voice':
                     message_type = 'voice'
                 elif ext == '.webm' and uploaded_file.size > 500000:
@@ -77,7 +75,6 @@ def chat(request):
             if ext in ['.jpg', '.jpeg', '.png', '.gif', '.webp']:
                 message_type = 'photo'
             elif ext in ['.mp4', '.mov', '.avi', '.mkv', '.webm']:
-                # if not already marked as voice
                 if message_type != 'voice':
                     message_type = 'video'
 
@@ -117,32 +114,3 @@ def admin_hub(request):
 def logout_view(request):
     logout(request)
     return render(request, 'logout.html')
-
-def register_view(request):
-   if request.method == 'POST':
-       form = RegisterForm(request.POST)
-       if form.is_valid():
-           form.save()
-           return redirect('login') # Go to login after register
-   else:
-       form = RegisterForm()
-   return render(request, 'register.html', {'form': form})
-
-@login_required
-def profile_view(request):
-    profile, created = StudentProfile.objects.get_or_create(user=request.user)
-
-    # If old user with no ID, let them set it once
-    if request.method == 'POST':
-      sid = request.POST.get('student_id','').strip().upper()
-      if sid and profile.student_id in ["", "NOT SET", None]:
-         if not StudentProfile.objects.filter(student_id=sid).exists():
-             profile.student_id = sid
-             profile.save()
-             return redirect('profile')
-
-    return render(request, 'profile.html', {
-        'username': request.user.username,
-        'student_id': profile.student_id,
-        'full_display': f"{request.user.username} ({profile.student_id})" if profile.student_id != "NOT SET" else request.user.username
-})
