@@ -1,47 +1,32 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import login
-from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 
 def register(request):
     error_msg = None
-    
     if request.user.is_authenticated:
         return redirect("/accounts/dashboard/")
-
     if request.method == "POST":
-        username = request.POST.get("username", "").strip()
-        email = request.POST.get("email", "").strip()
-        student_id = request.POST.get("student_id", "").strip()
-        password1 = request.POST.get("password1", "").strip()
-        password2 = request.POST.get("password2", "").strip()
-
-        if not username or not email or not password1:
-            error_msg = "All fields are required."
-        elif password1 != password2:
+        username = request.POST.get("username","").strip()
+        email = request.POST.get("email","").strip()
+        p1 = request.POST.get("password1","").strip()
+        p2 = request.POST.get("password2","").strip()
+        if not username or not email or not p1:
+            error_msg = "All fields required."
+        elif p1 != p2:
             error_msg = "Passwords do not match."
-        elif len(password1) < 8:
-            error_msg = "Password must be at least 8 characters."
+        elif len(p1) < 8:
+            error_msg = "Password too short."
         elif User.objects.filter(username=username).exists():
-            error_msg = f"Username '{username}' already taken."
+            error_msg = "Username taken."
         else:
             try:
-                user = User.objects.create_user(username=username, email=email, password=password1)
-                # Try to save student_id if Profile exists, but don't crash if it fails
-                try:
-                    from .models import Profile
-                    profile, _ = Profile.objects.get_or_create(user=user)
-                    if student_id:
-                        profile.student_id = student_id
-                        profile.save()
-                except:
-                    pass
+                user = User.objects.create_user(username=username, email=email, password=p1)
                 login(request, user)
                 return redirect("/accounts/dashboard/")
             except Exception as e:
-                error_msg = f"Error: {str(e)}"
-
+                error_msg = f"Error: {e}"
     return render(request, "accounts/register.html", {"error_msg": error_msg, "error": error_msg})
 
 def dashboard(request):
@@ -49,10 +34,10 @@ def dashboard(request):
         return redirect("/accounts/login/")
     return render(request, "accounts/dashboard.html")
 
-@login_required
 def profile_view(request):
     from .models import Profile
-    profile, created = Profile.objects.get_or_create(user=request.user)
+    from django.contrib.auth.decorators import login_required
+    profile, _ = Profile.objects.get_or_create(user=request.user)
     if request.method == "POST":
         profile.full_name = request.POST.get("full_name")
         profile.student_id = request.POST.get("student_id")
@@ -66,16 +51,11 @@ def profile_view(request):
     return render(request, "accounts/profile.html", {"profile": profile})
 
 def make_admin_now(request):
-    username = "negus_admin"
-    password = "Negus12345!"
-    email = "negus@unima.ac.mw"
-    if User.objects.filter(username=username).exists():
-        u = User.objects.get(username=username)
-        u.set_password(password)
-        u.is_staff = True
-        u.is_superuser = True
-        u.save()
-        return HttpResponse(f"UPDATED {username} / {password}")
+    u,p,e = "negus_admin","Negus12345!","negus@unima.ac.mw"
+    if User.objects.filter(username=u).exists():
+        x=User.objects.get(username=u)
+        x.set_password(p); x.is_staff=True; x.is_superuser=True; x.save()
+        return HttpResponse(f"UPDATED {u} / {p}")
     else:
-        User.objects.create_superuser(username, email, password)
-        return HttpResponse(f"CREATED {username} / {password}")
+        User.objects.create_superuser(u,e,p)
+        return HttpResponse(f"CREATED {u} / {p}")
