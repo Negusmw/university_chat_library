@@ -18,10 +18,11 @@ def register(request):
         
         try:
             user = User.objects.create_user(username=username, email=email, password=p1)
-            login(request, user)
-            return HttpResponse(f"DEBUG SUCCESS: User {username} created and logged in! Now we know register works. Go to /accounts/dashboard/")
-        except Exception as e:
-            return HttpResponse(f"DEBUG ERROR: {str(e)} | Type: {type(e).__name__}")
+                        login(request, user)
+            messages.success(request, f"Welcome {username}! Account created.")
+            return redirect('/accounts/dashboard/')
+                    messages.error(request, f"Error: {e}")
+            return render(request, 'accounts/register.html')
     
     return render(request, "accounts/register.html", {"error_msg": None})
 
