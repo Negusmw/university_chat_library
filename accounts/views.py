@@ -2,49 +2,47 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from .models import Profile
 
-try:
-    from core.models import StudentProfile
-except:
-    StudentProfile = None
-
 def register(request):
+    error_msg = None
+    print("REGISTER VIEW CALLED - METHOD:", request.method)
+    
     if request.user.is_authenticated:
         return redirect("/accounts/dashboard/")
 
-    error_msg = None
     if request.method == "POST":
+        print("POST DATA:", request.POST)
         username = request.POST.get("username", "").strip()
-        email = request.POST.get("email", "").strip() or request.POST.get("gmail", "").strip()
-        student_id = request.POST.get("student_id", "").strip()
-        password1 = request.POST.get("password1", "").strip() or request.POST.get("password", "").strip()
-        password2 = request.POST.get("password2", "").strip() or request.POST.get("confirm_password", "").strip()
+        email = request.POST.get("email", "").strip()
+        password1 = request.POST.get("password1", "").strip()
+        password2 = request.POST.get("password2", "").strip()
+        
+        print(f"Trying to create: {username} / {email}")
 
-        if not username or not email or not password1:
-            error_msg = "All fields are required."
+        if not username or not password1:
+            error_msg = "Username and password required"
         elif password1 != password2:
-            error_msg = "Passwords do not match."
+            error_msg = "Passwords do not match"
         elif len(password1) < 8:
-            error_msg = "Password must be at least 8 characters."
+            error_msg = "Password must be 8+ characters"
         elif User.objects.filter(username=username).exists():
-            error_msg = "Username already taken."
-        elif User.objects.filter(email=email).exists():
-            error_msg = "Email already registered."
+            error_msg = f"Username '{username}' already taken"
         else:
             try:
                 user = User.objects.create_user(username=username, email=email, password=password1)
-                # Save Student ID to Profile
+                user.save()
+                print("USER CREATED:", user.username)
                 try:
-                    profile, created = Profile.objects.get_or_create(user=user)
-                    profile.student_id = student_id
-                    profile.save()
-                except Exception:
-                    pass
+                    Profile.objects.get_or_create(user=user)
+                except Exception as e:
+                    print("Profile error:", e)
                 login(request, user)
                 return redirect("/accounts/dashboard/")
             except Exception as e:
-                error_msg = f"Error: {str(e)}"
+                error_msg = f"CREATE ERROR: {str(e)}"
+                print("EXCEPTION:", e)
 
     return render(request, "accounts/register.html", {"error_msg": error_msg, "error": error_msg})
 
@@ -72,7 +70,6 @@ def profile_view(request):
     return render(request, "accounts/profile.html", {"profile": profile})
 
 def make_admin_now(request):
-    from django.http import HttpResponse
     username = "negus_admin"
     password = "Negus12345!"
     email = "negus@unima.ac.mw"
