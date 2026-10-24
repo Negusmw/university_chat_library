@@ -1,26 +1,24 @@
-{% load static %}
 <!DOCTYPE html>
 <html>
-<head><title>Register</title></head>
+<head><title>Register - UNIMA Chat Library</title>
+<style>body{font-family:Arial;max-width:400px;margin:50px auto} input{width:100%;padding:10px;margin:5px 0} button{width:100%;padding:12px;background:#0a3d62;color:white;border:none} .error{background:#ff4757;color:white;padding:10px}</style>
+</head>
 <body>
-<h2>Register</h2>
+<h2>Create Account</h2>
 
 {% if error_msg %}
-<div style="background:red;color:white;padding:10px;margin:10px 0;">{{ error_msg }}</div>
-{% endif %}
-{% if error %}
-<div style="background:red;color:white;padding:10px;margin:10px 0;">{{ error }}</div>
+<div class="error">{{ error_msg }}</div>
 {% endif %}
 
 <form method="post">
 {% csrf_token %}
-<input type="text" name="username" placeholder="Username" required><br><br>
-<input type="email" name="email" placeholder="Email" required><br><br>
-<input type="password" name="password1" placeholder="Password" required><br><br>
-<input type="password" name="password2" placeholder="Confirm Password" required><br><br>
+<input type="text" name="username" placeholder="Username" required>
+<input type="email" name="email" placeholder="University Email" required>
+<input type="text" name="student_id" placeholder="Student ID (e.g. BSc/01/23)" required>
+<input type="password" name="password1" placeholder="Password (8+ chars)" required>
+<input type="password" name="password2" placeholder="Confirm Password" required>
 <button type="submit">Register</button>
 </form>
-
 <p><a href="/accounts/login/">Already have account? Login</a></p>
 </body>
 </html>
