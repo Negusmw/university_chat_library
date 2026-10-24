@@ -9,32 +9,32 @@ except:
     StudentProfile = None
 
 def register(request):
+    error = None
     if request.method == "POST":
         username = request.POST.get("username", "").strip()
         email = request.POST.get("email", "").strip()
-        password1 = request.POST.get("password1", "").strip()
-        
-        # Force unique username/email to avoid "already taken"
-        import time
-        if User.objects.filter(username=username).exists():
-            username = f"{username}{int(time.time())%1000}"
-        if User.objects.filter(email__iexact=email).exists():
-            email = f"{int(time.time())}@test.com"
+        password1 = request.POST.get("password1") or request.POST.get("password")
+        password2 = request.POST.get("password2") or request.POST.get("confirm_password") or password1
 
-        user = User.objects.create_user(username=username, email=email, password=password1)
-        Profile.objects.get_or_create(user=user)
-        if StudentProfile:
+        if not username or not password1:
+            error = "Username and password are required."
+        elif password1 != password2:
+            error = "Passwords do not match."
+        elif len(password1) < 8:
+            error = "Password must be at least 8 characters."
+        elif User.objects.filter(username=username).exists():
+            error = "Username already taken, choose another."
+        else:
             try:
-                StudentProfile.objects.get_or_create(user=user, defaults={'student_id': f"STU{user.id:06d}"})
-            except:
-                pass
-        login(request, user)
-        return redirect("/")
+                user = User.objects.create_user(username=username, email=email, password=password1)
+                user.save()
+                login(request, user)
+                return redirect("/accounts/dashboard/")
+            except Exception as e:
+                error = f"Error creating account: {str(e)}"
 
-    return render(request, "accounts/register.html")
-
-    return render(request, "accounts/register.html", {"error_msg": error})
-
+    return render(request, "accounts/register.html", {"error": error, "error_msg": error})
+                                 
 def dashboard(request):
     if not request.user.is_authenticated:
         return redirect("/accounts/login/")
