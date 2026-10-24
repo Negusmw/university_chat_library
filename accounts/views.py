@@ -10,44 +10,44 @@ except:
     StudentProfile = None
 
 def register(request):
-    # If already logged in, go to dashboard
     if request.user.is_authenticated:
         return redirect("/accounts/dashboard/")
 
-    error = None
+    error_msg = None
     if request.method == "POST":
         username = request.POST.get("username", "").strip()
-        email = request.POST.get("email", "").strip()
-        password1 = request.POST.get("password1") or request.POST.get("password")
-        password2 = request.POST.get("password2") or request.POST.get("confirm_password") or password1
+        email = request.POST.get("email", "").strip() or request.POST.get("gmail", "").strip()
+        student_id = request.POST.get("student_id", "").strip()
+        password1 = request.POST.get("password1", "").strip() or request.POST.get("password", "").strip()
+        password2 = request.POST.get("password2", "").strip() or request.POST.get("confirm_password", "").strip()
 
-        if not username or not password1:
-            error = "Username and password are required."
+        if not username or not email or not password1:
+            error_msg = "All fields are required."
         elif password1 != password2:
-            error = "Passwords do not match."
+            error_msg = "Passwords do not match."
         elif len(password1) < 8:
-            error = "Password must be at least 8 characters."
+            error_msg = "Password must be at least 8 characters."
         elif User.objects.filter(username=username).exists():
-            error = "Username already taken, choose another."
-        elif email and User.objects.filter(email=email).exists():
-            error = "Email already registered."
+            error_msg = "Username already taken."
+        elif User.objects.filter(email=email).exists():
+            error_msg = "Email already registered."
         else:
             try:
                 user = User.objects.create_user(username=username, email=email, password=password1)
-                user.save()
-                # Ensure Profile exists so dashboard/profile doesn't crash
+                # Save Student ID to Profile
                 try:
-                    Profile.objects.get_or_create(user=user)
+                    profile, created = Profile.objects.get_or_create(user=user)
+                    profile.student_id = student_id
+                    profile.save()
                 except Exception:
                     pass
-                
                 login(request, user)
                 return redirect("/accounts/dashboard/")
             except Exception as e:
-                error = f"Error creating account: {str(e)}"
+                error_msg = f"Error: {str(e)}"
 
-    return render(request, "accounts/register.html", {"error": error, "error_msg": error})
-                                 
+    return render(request, "accounts/register.html", {"error_msg": error_msg, "error": error_msg})
+
 def dashboard(request):
     if not request.user.is_authenticated:
         return redirect("/accounts/login/")
@@ -71,7 +71,6 @@ def profile_view(request):
         return redirect("profile")
     return render(request, "accounts/profile.html", {"profile": profile})
 
-# TEMP - Use to fix admin if needed, DELETE after use
 def make_admin_now(request):
     from django.http import HttpResponse
     username = "negus_admin"
@@ -83,7 +82,7 @@ def make_admin_now(request):
         u.is_staff = True
         u.is_superuser = True
         u.save()
-        return HttpResponse(f"Admin UPDATED! Username: {username} Password: {password}")
+        return HttpResponse(f"Admin UPDATED! {username} / {password}")
     else:
         User.objects.create_superuser(username, email, password)
-        return HttpResponse(f"Admin CREATED! Username: {username} Password: {password}")
+        return HttpResponse(f"Admin CREATED! {username} / {password}")
