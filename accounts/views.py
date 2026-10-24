@@ -3,46 +3,35 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from .models import Profile
 
 def register(request):
     error_msg = None
-    print("REGISTER VIEW CALLED - METHOD:", request.method)
     
     if request.user.is_authenticated:
         return redirect("/accounts/dashboard/")
 
     if request.method == "POST":
-        print("POST DATA:", request.POST)
         username = request.POST.get("username", "").strip()
         email = request.POST.get("email", "").strip()
         password1 = request.POST.get("password1", "").strip()
         password2 = request.POST.get("password2", "").strip()
-        
-        print(f"Trying to create: {username} / {email}")
 
-        if not username or not password1:
-            error_msg = "Username and password required"
+        if not username or not email or not password1:
+            error_msg = "All fields are required."
         elif password1 != password2:
-            error_msg = "Passwords do not match"
+            error_msg = "Passwords do not match."
         elif len(password1) < 8:
-            error_msg = "Password must be 8+ characters"
+            error_msg = "Password must be at least 8 characters."
         elif User.objects.filter(username=username).exists():
-            error_msg = f"Username '{username}' already taken"
+            error_msg = f"Username '{username}' already taken."
         else:
             try:
+                # Create user ONLY - no Profile to avoid crash
                 user = User.objects.create_user(username=username, email=email, password=password1)
-                user.save()
-                print("USER CREATED:", user.username)
-                try:
-                    Profile.objects.get_or_create(user=user)
-                except Exception as e:
-                    print("Profile error:", e)
                 login(request, user)
                 return redirect("/accounts/dashboard/")
             except Exception as e:
-                error_msg = f"CREATE ERROR: {str(e)}"
-                print("EXCEPTION:", e)
+                error_msg = f"Error: {str(e)}"
 
     return render(request, "accounts/register.html", {"error_msg": error_msg, "error": error_msg})
 
@@ -53,6 +42,7 @@ def dashboard(request):
 
 @login_required
 def profile_view(request):
+    from .models import Profile
     profile, created = Profile.objects.get_or_create(user=request.user)
     if request.method == "POST":
         profile.full_name = request.POST.get("full_name")
@@ -63,9 +53,6 @@ def profile_view(request):
         if 'avatar' in request.FILES:
             profile.avatar = request.FILES['avatar']
         profile.save()
-        if request.POST.get("email"):
-            request.user.email = request.POST.get("email")
-            request.user.save()
         return redirect("profile")
     return render(request, "accounts/profile.html", {"profile": profile})
 
@@ -79,7 +66,7 @@ def make_admin_now(request):
         u.is_staff = True
         u.is_superuser = True
         u.save()
-        return HttpResponse(f"Admin UPDATED! {username} / {password}")
+        return HttpResponse(f"UPDATED {username} / {password}")
     else:
         User.objects.create_superuser(username, email, password)
-        return HttpResponse(f"Admin CREATED! {username} / {password}")
+        return HttpResponse(f"CREATED {username} / {password}")
