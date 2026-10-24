@@ -6,7 +6,6 @@
     <title>Student Registration</title>
     <style>
         * { box-sizing: border-box; }
-
         body {
             margin: 0;
             font-family: Arial, sans-serif;
@@ -17,7 +16,6 @@
             align-items: center;
             padding: 25px;
         }
-
         .card {
             background: white;
             width: 100%;
@@ -26,17 +24,14 @@
             border-radius: 16px;
             box-shadow: 0 15px 45px rgba(0,0,0,.2);
         }
-
         h1 { color: #071a3d; text-align: center; margin-bottom: 8px; }
         .subtitle { text-align: center; color: #667085; margin-bottom: 25px; }
-
         label {
             display: block;
             font-weight: bold;
             margin: 16px 0 7px;
             color: #172554;
         }
-
         input {
             width: 100%;
             padding: 12px;
@@ -44,7 +39,6 @@
             border-radius: 7px;
             font-size: 15px;
         }
-
         button {
             width: 100%;
             margin-top: 24px;
@@ -57,8 +51,14 @@
             font-weight: bold;
             cursor: pointer;
         }
-
-        .message { color: #b42318; font-size: 14px; }
+        .message { 
+            color: #b42318; 
+            font-size: 14px; 
+            background: #ffe0e0; 
+            padding: 10px; 
+            border-radius: 5px; 
+            border: 1px solid #ffaaaa;
+        }
         .bottom { text-align: center; margin-top: 20px; color: #667085; }
         a { color: #124b85; font-weight: bold; }
         .brand { text-align: center; color: #b38620; font-size: 13px; }
@@ -70,32 +70,33 @@
         <h1>Create Account</h1>
         <p class="subtitle">Join your university community.</p>
 
-       {% if error_msg %}
-        <p class="message" style="background:#ffe0e0; padding:10px; border-radius:5px;">{{ error_msg }}</p>
-           {% endif %}
-       {% if messages %}
-      {% for message in messages %}
-        <p class="message">{{ message }}</p>
-           {% endfor %}
-           {% endif %}
+        {% if error_msg %}
+        <p class="message">{{ error_msg }}</p>
+        {% endif %}
+        
+        {% if error %}
+        <p class="message">{{ error }}</p>
+        {% endif %}
+
+        {% if messages %}
+            {% for message in messages %}
+            <p class="message">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+
         <form method="post">
             {% csrf_token %}
-
             <label for="username">Username</label>
-            <input id="username" name="username" type="text"
-                   autocomplete="username" required>
+            <input id="username" name="username" type="text" autocomplete="username" required>
 
             <label for="email">Email address</label>
-            <input id="email" name="email" type="email"
-                   autocomplete="email" required>
+            <input id="email" name="email" type="email" autocomplete="email" required>
 
             <label for="password1">Password</label>
-            <input id="password1" name="password1" type="password"
-                   autocomplete="new-password" required>
+            <input id="password1" name="password1" type="password" autocomplete="new-password" required>
 
             <label for="password2">Confirm password</label>
-            <input id="password2" name="password2" type="password"
-                   autocomplete="new-password" required>
+            <input id="password2" name="password2" type="password" autocomplete="new-password" required>
 
             <button type="submit">Create Account</button>
         </form>
