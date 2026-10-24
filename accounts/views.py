@@ -4,7 +4,6 @@ from django.contrib.auth import login
 from django.http import HttpResponse
 
 def register(request):
-    error_msg = None
     if request.user.is_authenticated:
         return redirect("/accounts/dashboard/")
     if request.method == "POST":
@@ -12,22 +11,19 @@ def register(request):
         email = request.POST.get("email","").strip()
         p1 = request.POST.get("password1","").strip()
         p2 = request.POST.get("password2","").strip()
-        if not username or not email or not p1:
-            error_msg = "All fields required."
-        elif p1 != p2:
-            error_msg = "Passwords do not match."
-        elif len(p1) < 8:
-            error_msg = "Password too short."
-        elif User.objects.filter(username=username).exists():
-            error_msg = "Username taken."
-        else:
-            try:
-                user = User.objects.create_user(username=username, email=email, password=p1)
-                login(request, user)
-                return redirect("/accounts/dashboard/")
-            except Exception as e:
-                error_msg = f"Error: {e}"
-    return render(request, "accounts/register.html", {"error_msg": error_msg, "error": error_msg})
+        
+        # DEBUG - show us what happens
+        if User.objects.filter(username=username).exists():
+            return HttpResponse(f"DEBUG: Username {username} already exists - try new name")
+        
+        try:
+            user = User.objects.create_user(username=username, email=email, password=p1)
+            login(request, user)
+            return HttpResponse(f"DEBUG SUCCESS: User {username} created and logged in! Now we know register works. Go to /accounts/dashboard/")
+        except Exception as e:
+            return HttpResponse(f"DEBUG ERROR: {str(e)} | Type: {type(e).__name__}")
+    
+    return render(request, "accounts/register.html", {"error_msg": None})
 
 def dashboard(request):
     if not request.user.is_authenticated:
@@ -35,20 +31,7 @@ def dashboard(request):
     return render(request, "accounts/dashboard.html")
 
 def profile_view(request):
-    from .models import Profile
-    from django.contrib.auth.decorators import login_required
-    profile, _ = Profile.objects.get_or_create(user=request.user)
-    if request.method == "POST":
-        profile.full_name = request.POST.get("full_name")
-        profile.student_id = request.POST.get("student_id")
-        profile.course = request.POST.get("course")
-        profile.year_of_study = request.POST.get("year_of_study")
-        profile.bio = request.POST.get("bio")
-        if 'avatar' in request.FILES:
-            profile.avatar = request.FILES['avatar']
-        profile.save()
-        return redirect("profile")
-    return render(request, "accounts/profile.html", {"profile": profile})
+    return render(request, "accounts/dashboard.html")
 
 def make_admin_now(request):
     u,p,e = "negus_admin","Negus12345!","negus@unima.ac.mw"
