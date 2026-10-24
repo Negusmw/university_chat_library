@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
 from .models import Profile
 
 try:
@@ -9,6 +10,10 @@ except:
     StudentProfile = None
 
 def register(request):
+    # If already logged in, go to dashboard
+    if request.user.is_authenticated:
+        return redirect("/accounts/dashboard/")
+
     error = None
     if request.method == "POST":
         username = request.POST.get("username", "").strip()
@@ -24,10 +29,18 @@ def register(request):
             error = "Password must be at least 8 characters."
         elif User.objects.filter(username=username).exists():
             error = "Username already taken, choose another."
+        elif email and User.objects.filter(email=email).exists():
+            error = "Email already registered."
         else:
             try:
                 user = User.objects.create_user(username=username, email=email, password=password1)
                 user.save()
+                # Ensure Profile exists so dashboard/profile doesn't crash
+                try:
+                    Profile.objects.get_or_create(user=user)
+                except Exception:
+                    pass
+                
                 login(request, user)
                 return redirect("/accounts/dashboard/")
             except Exception as e:
@@ -40,7 +53,6 @@ def dashboard(request):
         return redirect("/accounts/login/")
     return render(request, "accounts/dashboard.html")
 
-from django.contrib.auth.decorators import login_required
 @login_required
 def profile_view(request):
     profile, created = Profile.objects.get_or_create(user=request.user)
@@ -53,7 +65,25 @@ def profile_view(request):
         if 'avatar' in request.FILES:
             profile.avatar = request.FILES['avatar']
         profile.save()
-        request.user.email = request.POST.get("email")
-        request.user.save()
+        if request.POST.get("email"):
+            request.user.email = request.POST.get("email")
+            request.user.save()
         return redirect("profile")
     return render(request, "accounts/profile.html", {"profile": profile})
+
+# TEMP - Use to fix admin if needed, DELETE after use
+def make_admin_now(request):
+    from django.http import HttpResponse
+    username = "negus_admin"
+    password = "Negus12345!"
+    email = "negus@unima.ac.mw"
+    if User.objects.filter(username=username).exists():
+        u = User.objects.get(username=username)
+        u.set_password(password)
+        u.is_staff = True
+        u.is_superuser = True
+        u.save()
+        return HttpResponse(f"Admin UPDATED! Username: {username} Password: {password}")
+    else:
+        User.objects.create_superuser(username, email, password)
+        return HttpResponse(f"Admin CREATED! Username: {username} Password: {password}")
