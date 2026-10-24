@@ -13,6 +13,7 @@ def register(request):
     if request.method == "POST":
         username = request.POST.get("username", "").strip()
         email = request.POST.get("email", "").strip()
+        student_id = request.POST.get("student_id", "").strip()
         password1 = request.POST.get("password1", "").strip()
         password2 = request.POST.get("password2", "").strip()
 
@@ -26,8 +27,16 @@ def register(request):
             error_msg = f"Username '{username}' already taken."
         else:
             try:
-                # Create user ONLY - no Profile to avoid crash
                 user = User.objects.create_user(username=username, email=email, password=password1)
+                # Try to save student_id if Profile exists, but don't crash if it fails
+                try:
+                    from .models import Profile
+                    profile, _ = Profile.objects.get_or_create(user=user)
+                    if student_id:
+                        profile.student_id = student_id
+                        profile.save()
+                except:
+                    pass
                 login(request, user)
                 return redirect("/accounts/dashboard/")
             except Exception as e:
