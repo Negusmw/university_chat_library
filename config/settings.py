@@ -7,20 +7,23 @@ import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = '4zl)j%ew^_f70-eiugn7moayz))xa&_hsseje0b-(p)dq(1^0a'
+# Use env secret if exists, else your current one
+SECRET_KEY = os.environ.get('SECRET_KEY', '4zl)j%ew^_f70-eiugn7moayz))xa&_hsseje0b-(p)dq(1^0a')
 
 DEBUG = True
 
-   # Force deploy - fixed ALLOWED_HOSTS
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
+    # Cloudinary must be before staticfiles if you use it
+    'cloudinary_storage',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cloudinary',
     'core.apps.CoreConfig',
     'accounts',
     'community'
@@ -72,6 +75,7 @@ if DATABASE_URL:
         conn_max_age=600,
         ssl_require=True,
     )
+
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -86,12 +90,25 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / "media"
 STATIC_ROOT = BASE_DIR / 'staticfiles_build' / 'static'
-
-# Important for Vercel
 STATICFILES_DIRS = [BASE_DIR / 'static'] if (BASE_DIR / 'static').exists() else []
+
+# --- MEDIA FIX FOR VERCEL ---
+# If Cloudinary env vars exist -> use Cloudinary (permanent)
+# If not -> use /tmp/media (quick fix, won't crash)
+if os.environ.get('CLOUDINARY_CLOUD_NAME'):
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+        'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
+        'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
+    }
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    MEDIA_URL = '/media/'
+else:
+    # QUICK FIX: Vercel allows /tmp to be writable
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = '/tmp/media'
+    os.makedirs(MEDIA_ROOT, exist_ok=True)
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_REDIRECT_URL = '/accounts/dashboard/'
