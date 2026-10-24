@@ -1,45 +1,72 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
-from django.contrib.auth import login
+from django.contrib import messages
+from django.contrib.auth import login, logout
 from django.http import HttpResponse
 
+# Try import profile - don't crash if it doesn't exist
+try:
+    from core.models import StudentProfile
+except:
+    StudentProfile = None
+
 def register(request):
-    if request.user.is_authenticated:
-        return redirect("/accounts/dashboard/")
-    if request.method == "POST":
-        username = request.POST.get("username","").strip()
-        email = request.POST.get("email","").strip()
-        p1 = request.POST.get("password1","").strip()
-        p2 = request.POST.get("password2","").strip()
-        
-        # DEBUG - show us what happens
-        if User.objects.filter(username=username).exists():
-            return HttpResponse(f"DEBUG: Username {username} already exists - try new name")
-        
-        try:
-            user = User.objects.create_user(username=username, email=email, password=p1)
-                        login(request, user)
-            messages.success(request, f"Welcome {username}! Account created.")
-            return redirect('/accounts/dashboard/')
-                    messages.error(request, f"Error: {e}")
+    if request.method == 'POST':
+        username = request.POST.get('username','').strip()
+        email = request.POST.get('university_email') or request.POST.get('email') or ''
+        email = email.strip()
+        student_id = request.POST.get('student_id','').strip()
+        password = request.POST.get('password')
+        password2 = request.POST.get('confirm_password') or request.POST.get('password2')
+
+        if not all([username, email, password, password2]):
+            messages.error(request, "Please fill all fields")
             return render(request, 'accounts/register.html')
-    
-    return render(request, "accounts/register.html", {"error_msg": None})
+
+        if password != password2:
+            messages.error(request, "Passwords don't match")
+            return render(request, 'accounts/register.html')
+
+        if len(password) < 8:
+            messages.error(request, "Password must be 8+ chars")
+            return render(request, 'accounts/register.html')
+
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Username already taken")
+            return render(request, 'accounts/register.html')
+
+        if User.objects.filter(email=email).exists():
+            messages.error(request, "Email already used")
+            return render(request, 'accounts/register.html')
+
+        user = User.objects.create_user(username=username, email=email, password=password)
+        
+        if StudentProfile and student_id:
+            try:
+                StudentProfile.objects.create(user=user, student_id=student_id, university_email=email)
+            except:
+                pass
+
+        login(request, user)
+        return redirect('/accounts/dashboard/')
+
+    return render(request, 'accounts/register.html')
 
 def dashboard(request):
-    if not request.user.is_authenticated:
-        return redirect("/accounts/login/")
-    return render(request, "accounts/dashboard.html")
+    return render(request, 'accounts/dashboard.html')
 
 def profile_view(request):
-    return render(request, "accounts/dashboard.html")
+    return render(request, 'accounts/dashboard.html')
 
 def make_admin_now(request):
-    u,p,e = "negus_admin","Negus12345!","negus@unima.ac.mw"
-    if User.objects.filter(username=u).exists():
-        x=User.objects.get(username=u)
-        x.set_password(p); x.is_staff=True; x.is_superuser=True; x.save()
-        return HttpResponse(f"UPDATED {u} / {p}")
-    else:
-        User.objects.create_superuser(u,e,p)
-        return HttpResponse(f"CREATED {u} / {p}")
+    user, created = User.objects.get_or_create(username='negus', defaults={'email': 'negus@unima.ac.mw'})
+    if created:
+        user.set_password('Negus123!')
+    user.is_staff = True
+    user.is_superuser = True
+    user.save()
+    return HttpResponse(f"{'CREATED' if created else 'UPDATED'} negus - admin. Login: negus / Negus123!")
+
+def logout_get(request):
+    logout(request)
+    return redirect('/accounts/login/')
