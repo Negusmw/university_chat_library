@@ -2,10 +2,12 @@ from django.urls import path
 from django.contrib.auth import logout, views as auth_views
 from django.shortcuts import redirect
 from . import views
+path('login/', views.custom_login, name='login'),
 
 def logout_get(request):
     logout(request)
     return redirect('/accounts/login/')
+    
 
 urlpatterns = [
     # Login
