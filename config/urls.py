@@ -3,7 +3,7 @@ from django.urls import path, include
 from django.http import HttpResponse
 
 def home(request):
-    return HttpResponse("Home is working - go to /accounts/login/")
+    return HttpResponse("Site is working! Go to /accounts/login/")
 
 urlpatterns = [
     path('admin/', admin.site.urls),
