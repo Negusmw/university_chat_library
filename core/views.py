@@ -34,20 +34,47 @@ def profile(request):
 
 @login_required
 def profile_view(request):
-    from .models import StudentProfile
-    profile, created = StudentProfile.objects.get_or_create(user=request.user)
-    
+    # Try to get StudentProfile if you have it
+    try:
+        from .models import StudentProfile
+        profile, created = StudentProfile.objects.get_or_create(user=request.user)
+    except:
+        profile = None
+
+    # HANDLE SAVE
     if request.method == 'POST':
-        student_id = request.POST.get('student_id', '').strip()
-        if student_id:
-            profile.student_id = student_id
+        new_id = request.POST.get('student_id', '').strip()
+        if new_id and profile is not None:
+            profile.student_id = new_id
             profile.save()
-            messages.success(request, f"Student ID {student_id} saved!")
+            messages.success(request, "Student ID saved!")
             return redirect('/profile/')
+        elif new_id:
+            # If you don't have StudentProfile model yet, save to session
+            request.session['student_id'] = new_id
+            return redirect('/profile/')
+
+    # GET CURRENT VALUES
+    if profile and hasattr(profile, 'student_id') and profile.student_id:
+        student_id = profile.student_id
+    else:
+        student_id = request.session.get('student_id', 'NOT SET')
+
+    username = request.user.username
+    gmail = request.user.email or ''
     
+    # This creates "Negus Mw (2024-UNIMA-001)" like you want
+    if student_id and student_id != "NOT SET":
+        full_display = f"{username} ({student_id})"
+    else:
+        full_display = username
+
     return render(request, 'core/profile.html', {
-        'profile': profile,
-        'user_obj': request.user,
+        'full_display': full_display,
+        'student_id': student_id,
+        'username': username,
+        'gmail': gmail,
+        'user': request.user,  # needed for date_joined
     })
 
 @login_required(login_url="/accounts/login/")
