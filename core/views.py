@@ -32,6 +32,24 @@ def profile(request):
         'profile': profile
 })
 
+@login_required
+def profile_view(request):
+    from .models import StudentProfile
+    profile, created = StudentProfile.objects.get_or_create(user=request.user)
+    
+    if request.method == 'POST':
+        student_id = request.POST.get('student_id', '').strip()
+        if student_id:
+            profile.student_id = student_id
+            profile.save()
+            messages.success(request, f"Student ID {student_id} saved!")
+            return redirect('/profile/')
+    
+    return render(request, 'core/profile.html', {
+        'profile': profile,
+        'user_obj': request.user,
+    })
+
 @login_required(login_url="/accounts/login/")
 def library(request):
     resources = Resource.objects.all().order_by('-created_at')
