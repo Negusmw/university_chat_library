@@ -12,24 +12,37 @@ except:
 def register(request):
     if request.method == 'POST':
         username = request.POST.get('username','').strip()
-        email = request.POST.get('email') or request.POST.get('university_email') or ''
-        email = email.strip()
-        student_id = request.POST.get('student_id','')
-        password = request.POST.get('password')
-        password2 = request.POST.get('confirm_password') or request.POST.get('password2') or password
+        email = request.POST.get('email','').strip()
+        student_id = request.POST.get('student_id','').strip()
+        password1 = request.POST.get('password1','')
+        password2 = request.POST.get('password2','')
+
+        # validation
+        if password1 != password2:
+            return render(request, 'accounts/register.html', {'error_msg': "Passwords don't match"})
+        
+        if len(password1) < 8:
+            return render(request, 'accounts/register.html', {'error_msg': "Password must be 8+ chars"})
 
         if User.objects.filter(username=username).exists():
-            messages.error(request, "Username taken")
-            return render(request, 'accounts/register.html')
+            return render(request, 'accounts/register.html', {'error_msg': "Username taken"})
 
-        user = User.objects.create_user(username=username, email=email, password=password)
-        if StudentProfile:
-            try:
-                StudentProfile.objects.create(user=user, student_id=student_id, university_email=email)
-            except: pass
-
-        login(request, user)
-        return redirect('/')  # or '/accounts/dashboard/' - goes to home after register
+        try:
+            user = User.objects.create_user(username=username, email=email, password=password1)
+            
+            if StudentProfile:
+                try:
+                    StudentProfile.objects.get_or_create(
+                        user=user, 
+                        defaults={'student_id': student_id, 'university_email': email}
+                    )
+                except:
+                    pass
+            
+            login(request, user)
+            return redirect('/')
+        except Exception as e:
+            return render(request, 'accounts/register.html', {'error_msg': f"Error: {e}"})
 
     return render(request, 'accounts/register.html')
 
